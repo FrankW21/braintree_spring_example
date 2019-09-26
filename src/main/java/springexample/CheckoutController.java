@@ -35,10 +35,12 @@ public class CheckoutController {
         Transaction.Status.SUBMITTED_FOR_SETTLEMENT
      };
 
+
+     /*
     @RequestMapping(value = "/", method = RequestMethod.GET)
     public String root(Model model) {
         return "redirect:checkouts";
-    }
+    }*/
 
     @RequestMapping(value = "/checkouts", method = RequestMethod.GET)
     public String checkout(Model model) {

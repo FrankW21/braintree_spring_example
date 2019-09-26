@@ -1,0 +1,27 @@
+<!DOCTYPE HTML>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+    <script src="https://js.braintreegateway.com/web/dropin/1.20.1/js/dropin.min.js"></script>
+</head>
+<body>
+<div id="dropin-container"></div>
+<button id="submit-button">Request payment method</button>
+<script>
+      var button = document.querySelector('#submit-button');
+
+      braintree.dropin.create({
+        authorization: 'sandbox_tvwwyr3m_fm986qs4c8897z6g',
+        container: '#dropin-container'
+      }, function (createErr, instance) {
+        button.addEventListener('click', function () {
+          instance.requestPaymentMethod(function (requestPaymentMethodErr, payload) {
+            // Submit payload.nonce to your server
+            var a = 1;
+            a = a + 1;
+          });
+        });
+      });
+    </script>
+</body>
+</html>
