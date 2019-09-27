@@ -3,7 +3,7 @@ buildscript {
         mavenCentral()
     }
     dependencies {
-        classpath("org.springframework.boot:spring-boot-gradle-plugin:1.5.7.RELEASE")
+        classpath("org.springframework.boot:spring-boot-gradle-plugin")
     }
 }
 
@@ -25,12 +25,17 @@ sourceCompatibility = 1.7
 targetCompatibility = 1.7
 
 dependencies {
-    compile("org.springframework.boot:spring-boot-starter-web:1.5.7.RELEASE")
+    compile("org.springframework.boot:spring-boot-starter-web")
     compile("com.braintreepayments.gateway:braintree-java:2.79.0")
     compile("org.springframework.boot:spring-boot-starter-thymeleaf")
+    compile("org.springframework:spring-web")
+    compile("com.fasterxml.jackson.core:jackson-databind")
+    compile("org.springframework.boot:spring-boot-starter-security")
+    compile("org.apache.httpcomponents:httpclient:4.5.3")
+
     testCompile("junit:junit")
     testCompile("io.rest-assured:spring-mock-mvc:3.0.3")
-    testCompile("org.springframework.boot:spring-boot-starter-test:1.5.7.RELEASE")
+    testCompile("org.springframework.boot:spring-boot-starter-test")
 }
 
 task wrapper(type: Wrapper) {

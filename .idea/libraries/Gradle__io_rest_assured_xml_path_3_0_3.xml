@@ -1,0 +1,11 @@
+<component name="libraryTable">
+  <library name="Gradle: io.rest-assured:xml-path:3.0.3">
+    <CLASSES>
+      <root url="jar://$USER_HOME$/.gradle/caches/modules-2/files-2.1/io.rest-assured/xml-path/3.0.3/f5f3203a37b313be91547c968fb523dbce61415c/xml-path-3.0.3.jar!/" />
+    </CLASSES>
+    <JAVADOC />
+    <SOURCES>
+      <root url="jar://$USER_HOME$/.gradle/caches/modules-2/files-2.1/io.rest-assured/xml-path/3.0.3/9e12b2e8e19683b8c58fc4e5b417ade1d44cd9e/xml-path-3.0.3-sources.jar!/" />
+    </SOURCES>
+  </library>
+</component>

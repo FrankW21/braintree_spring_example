@@ -18,9 +18,4 @@ public class MainController
         return "braintreeform";
     }
 
-    @RequestMapping(value = "/c2", method = RequestMethod.GET)
-    public String c2(Model model) {
-        return "c2";
-    }
-
 }
