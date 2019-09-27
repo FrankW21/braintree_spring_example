@@ -1,0 +1,16 @@
+<!DOCTYPE HTML>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+    <title>Checkout</title>
+</head>
+<body>
+    <form id="payment-form" action="/checkouts" method="post">
+        <script src="https://js.braintreegateway.com/web/dropin/1.20.1/js/dropin.min.js"
+                data-braintree-dropin-authorization="sandbox_tvwwyr3m_fm986qs4c8897z6g"
+        ></script>
+        <input type="hidden" id="amount" name="amount" placeholder="Amount" value="10"></input>
+        <input type="submit" value="Purchase"></input>
+    </form>
+</body>
+</html>
