@@ -1,0 +1,79 @@
+<!DOCTYPE HTML>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+    <script src="https://js.braintreegateway.com/web/dropin/1.20.1/js/dropin.min.js"></script>
+</head>
+<body>
+<div id="dropin-container"></div>
+<button id="submit-button">Request payment method</button>
+<script th:inline="javascript">
+    var submitButton = document.querySelector('#submit-button');
+    var client_token = [[${clientToken}]];
+    var threeDSecureParameters = {
+      amount: '500.00',
+      email: 'test@example.com',
+      billingAddress: {
+        givenName: 'Jill', // ASCII-printable characters required, else will throw a validation error
+        surname: 'Doe', // ASCII-printable characters required, else will throw a validation error
+        phoneNumber: '8101234567',
+        streetAddress: '555 Smith St.',
+        extendedAddress: '#5',
+        locality: 'Oakland',
+        region: 'CA',
+        postalCode: '12345',
+        countryCodeAlpha2: 'US'
+      },
+      additionalInformation: {
+        workPhoneNumber: '8101234567',
+        shippingGivenName: 'Jill',
+        shippingSurname: 'Doe',
+        shippingPhone: '8101234567',
+        shippingAddress: {
+          streetAddress: '555 Smith St.',
+          extendedAddress: '#5',
+          locality: 'Oakland',
+          region: 'CA',
+          postalCode: '12345',
+          countryCodeAlpha2: 'US'
+        }
+      },
+    };
+
+    braintree.dropin.create({
+        authorization: client_token,
+        container: '#dropin-container',
+        threeDSecure: true
+    }, function (err, dropinInstance) {
+        if (err) {
+            // Handle any errors that might've occurred when creating Drop-in
+            console.error(err);
+            return;
+        }
+
+        submitButton.addEventListener('click', function (e) {
+            e.preventDefault();
+            dropinInstance.requestPaymentMethod({
+              threeDSecure: threeDSecureParameters
+            }, function (err, payload) {
+                if (err) {
+                    // Handle errors in requesting payment method
+                }
+                var a = 1;
+                a = a + 1;
+                var xhttp = new XMLHttpRequest();
+                xhttp.open("POST", "/checkouts", true);
+                xhttp.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
+
+                /*<![CDATA[*/
+                var params = "payment_method_nonce=" + payload.nonce + "&amount=10";
+                /*]]>*/
+
+                xhttp.send(params);
+                // Send payload.nonce to your server
+            });
+        });
+    });
+    </script>
+</body>
+</html>

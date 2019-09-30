@@ -3,17 +3,17 @@ package springexample.c2model;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
 @JsonIgnoreProperties(ignoreUnknown = true)
-public class OrderRequest
+public class OrderResponse
 {
-    private Total total;
+    private String id;
 
-    public Total getTotal()
+    public String getId()
     {
-        return total;
+        return id;
     }
 
-    public void setTotal(Total total)
+    public void setId(String id)
     {
-        this.total = total;
+        this.id = id;
     }
 }

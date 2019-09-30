@@ -50,6 +50,13 @@ public class CheckoutController {
         return "checkouts/new";
     }
 
+    @RequestMapping(value = "/braintree3ds", method = RequestMethod.GET)
+    public String braintree3ds(Model model) {
+        String clientToken = gateway.clientToken().generate();
+        model.addAttribute("clientToken", clientToken);
+        return "braintree3ds";
+    }
+
     @RequestMapping(value = "/checkouts", method = RequestMethod.POST)
     public String postForm(@RequestParam("amount") String amount, @RequestParam("payment_method_nonce") String nonce, Model model, final RedirectAttributes redirectAttributes) {
         BigDecimal decimalAmount;

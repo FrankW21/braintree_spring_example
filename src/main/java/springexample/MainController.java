@@ -13,9 +13,14 @@ public class MainController
         return "index";
     }
 
-    @RequestMapping(value = "/braintree", method = RequestMethod.GET)
-    public String braintree(Model model) {
+    @RequestMapping(value = "/braintreeform", method = RequestMethod.GET)
+    public String braintreeform(Model model) {
         return "braintreeform";
+    }
+
+    @RequestMapping(value = "/braintreejs", method = RequestMethod.GET)
+    public String braintreejs(Model model) {
+        return "braintreejs";
     }
 
 }
