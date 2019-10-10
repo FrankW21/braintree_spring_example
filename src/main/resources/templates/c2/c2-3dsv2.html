@@ -4,14 +4,17 @@
     <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
 </head>
 <body>
-    <form method="POST" action="http://localhost:8080/c2/lightbox">
+
+    <form method="POST" action="http://localhost:8080/c2/lightboxV2">
         <script
-                src="https://uat.hpp.converge.eu.elavonaws.com/client/index.js"
+                th:src="${src}"
                 class="converge-button"
                 data-merchant-alias="P7pbm2VCXCHCCj6BPTFpRmdC"
                 data-public-key="pk_GVYX3tBcHGyj7thpJBMkMGd9"
                 th:attrappend="data-session-id=${id}">
         </script>
+        <input type="hidden" name="MD" th:value="${md}" size="30"/>
     </form>
+
 </body>
 </html>

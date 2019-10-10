@@ -1,0 +1,17 @@
+<!DOCTYPE HTML>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+</head>
+<body>
+    <form method="POST" action="http://localhost:8080/c2/lightboxV1">
+        <script
+                th:src="${src}"
+                class="converge-button"
+                data-merchant-alias="P7pbm2VCXCHCCj6BPTFpRmdC"
+                data-public-key="pk_GVYX3tBcHGyj7thpJBMkMGd9"
+                th:attrappend="data-session-id=${id}">
+        </script>
+    </form>
+</body>
+</html>

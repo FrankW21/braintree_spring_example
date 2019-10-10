@@ -7,6 +7,7 @@ public class TransactionRequest
 {
     private Total total;
     private String hostedCard;
+    private String paymentSession;
     private String doCapture;
 
     public Total getTotal()
@@ -37,5 +38,15 @@ public class TransactionRequest
     public void setDoCapture(String doCapture)
     {
         this.doCapture = doCapture;
+    }
+
+    public String getPaymentSession()
+    {
+        return paymentSession;
+    }
+
+    public void setPaymentSession(String paymentSession)
+    {
+        this.paymentSession = paymentSession;
     }
 }

@@ -1,9 +1,9 @@
-package springexample.c2modelhack;
+package springexample.c2model;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
 @JsonIgnoreProperties(ignoreUnknown = true)
-public class TreeDSecureV1
+public class TreeDSecureV1Response
 {
     private String payerAuthenticationResponse;
 

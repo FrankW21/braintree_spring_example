@@ -10,6 +10,7 @@ public class PaymentSessionResponse
     private String modifiedAt;
     private String createdAt;
     private String forexAdvice;
+    private String order;
 
     public String getId()
     {
@@ -59,5 +60,15 @@ public class PaymentSessionResponse
     public void setForexAdvice(String forexAdvice)
     {
         this.forexAdvice = forexAdvice;
+    }
+
+    public String getOrder()
+    {
+        return order;
+    }
+
+    public void setOrder(String order)
+    {
+        this.order = order;
     }
 }
