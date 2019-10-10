@@ -6,6 +6,17 @@ import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 public class OrderResponse
 {
     private String id;
+    private Total total;
+
+    public Total getTotal()
+    {
+        return total;
+    }
+
+    public void setTotal(Total total)
+    {
+        this.total = total;
+    }
 
     public String getId()
     {

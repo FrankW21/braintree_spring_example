@@ -25,17 +25,12 @@ import java.util.regex.Pattern;
 @Controller
 public class C2Controller
 {
-    String site = "http://localhost:8080";
-    //String apisite = "https://uat.api.converge.eu.elavonaws.com/";
-    //String hppsrc = "https://uat.hpp.converge.eu.elavonaws.com/client/index.js";
-
-    String apisite = "https://dev.api.converge.eu.elavonaws.com/";
-    String hppsrc = "https://dev.hpp.converge.eu.elavonaws.com/client/index.js";
+    C2Configuration c2Configuration = Application.c2Configuration;
 
     public HttpHeaders getHeader()
     {
         // create auth credentials
-        String authStr = "P7pbm2VCXCHCCj6BPTFpRmdC:sk_rQPyCTDmXBH9wKV7x9MpMP2f";
+        String authStr = c2Configuration.getMerchantAlias() + ":" + c2Configuration.getSecretKey();
         String base64Creds = Base64.getEncoder().encodeToString(authStr.getBytes());
 
         // create headers
@@ -47,7 +42,7 @@ public class C2Controller
 
     public OrderResponse createOrder(String amount, String currencyCode)
     {
-        final String uri = apisite + "orders";
+        final String uri = c2Configuration.getApi() + "/orders";
 
         OrderRequest order = new OrderRequest();
         Total total = new Total();
@@ -64,13 +59,13 @@ public class C2Controller
 
     public PaymentSessionResponse createPaymentSession(OrderResponse order)
     {
-        final String uri = apisite + "payment-sessions";
+        final String uri = c2Configuration.getApi() + "/payment-sessions";
 
         PaymentSessionRequest pr = new PaymentSessionRequest();
-        pr.setOrder( apisite + "orders/" + order.getId());
-        pr.setReturnUrl(site + "/c2/return");
-        pr.setCancelUrl(site + "/c2/cancel");
-        pr.setOriginUrl(site);
+        pr.setOrder( c2Configuration.getApi() + "/orders/" + order.getId());
+        pr.setReturnUrl(c2Configuration.getMerchantSite() + "/c2/return");
+        pr.setCancelUrl(c2Configuration.getMerchantSite() + "/c2/cancel");
+        pr.setOriginUrl(c2Configuration.getMerchantSite());
 
         // create request
         HttpEntity request = new HttpEntity(pr, getHeader());
@@ -85,10 +80,52 @@ public class C2Controller
     {
         OrderResponse order = createOrder("4", "EUR");
         PaymentSessionResponse response = createPaymentSession(order);
-        model.addAttribute("src", hppsrc);
+        model.addAttribute("src", c2Configuration.getHpp() + "/client/index.js");
         model.addAttribute("id", response.getId());
         return "/c2/c2-3dsv1";
     }
+
+    // used for hpp integration to receive data back from
+    // not used for lightbox
+    @RequestMapping(value = "/c2/return", method = RequestMethod.GET)
+    public String c2Return(@RequestParam("token") String token, @RequestParam("sessionId") String sessionId, @RequestParam("hostedCard") String hostedCard, Model model) throws Exception
+    {
+        final String hosteduri = c2Configuration.getApi() + "/hosted-cards/" + hostedCard;
+        final String paymentsessionuri = c2Configuration.getApi() + "/payment-sessions/" + sessionId;
+
+        HttpEntity request = new HttpEntity(getHeader());
+        RestTemplate restTemplate = new RestTemplate();
+
+        ResponseEntity<PaymentSessionResponse> response = restTemplate.exchange(paymentsessionuri, HttpMethod.GET, request, PaymentSessionResponse.class);
+        PaymentSessionResponse ps = response.getBody();
+
+        HttpEntity request2 = new HttpEntity(getHeader());
+        RestTemplate restTemplate2 = new RestTemplate();
+
+        ResponseEntity<OrderResponse> response2 = restTemplate.exchange(ps.getOrder(), HttpMethod.GET, request, OrderResponse.class);
+        OrderResponse order = response2.getBody();
+
+
+        // complete transaction
+        final String sturi = c2Configuration.getApi() + "/transactions";
+        URI turi = new URI(sturi);
+
+        TransactionRequest tr = new TransactionRequest();
+        Total total = new Total();
+        total.setAmount(order.getTotal().getAmount());
+        total.setCurrencyCode(order.getTotal().getCurrencyCode());
+        tr.setTotal(total);
+        tr.setHostedCard(hosteduri);
+        tr.setPaymentSession(paymentsessionuri);
+        tr.setDoCapture("false");
+
+        HttpEntity transrequest = new HttpEntity(tr, getHeader());
+        RestTemplate restTemplate3 = new RestTemplate();
+        ResponseEntity<String> transresult = restTemplate2.postForEntity( turi, transrequest, String.class);
+
+        return "redirect:/c2/done?response=" + URLEncoder.encode(transresult.getBody(), StandardCharsets.UTF_8.toString()); //, model);
+    }
+
 
     @RequestMapping(value = "/c2/c2-3dsv2-order", method = RequestMethod.GET)
     public String c2v2(Model model)
@@ -96,13 +133,12 @@ public class C2Controller
         return "/c2/c2-3dsv2-order";
     }
 
-
     @RequestMapping(value = "/c2/c2-3dsv2", method = RequestMethod.POST)
     public String c2v2(@RequestParam("amount") String amount, @RequestParam("currency-code") String currencyCode, Model model) throws com.fasterxml.jackson.core.JsonProcessingException
     {
         OrderResponse order = createOrder(amount, currencyCode);
         PaymentSessionResponse response = createPaymentSession(order);
-        model.addAttribute("src", hppsrc);
+        model.addAttribute("src", c2Configuration.getHpp() + "/client/index.js");
         model.addAttribute("id", response.getId());
 
         MerchantData merchantData = new MerchantData();
@@ -114,7 +150,12 @@ public class C2Controller
         String md = objectMapper.writeValueAsString(merchantData);
 
         model.addAttribute("md", md);
-        return "/c2/c2-3dsv2";
+
+        String hppurl = c2Configuration.getHpp() + "?sessionId=" + response.getId() + "&publicApiKey=" + c2Configuration.getPublicApiKey() + "&merchantAlias=" + c2Configuration.getMerchantAlias();
+        //https://<hpp-url>?sessionId=<payment-session-id>&publicApiKey=<public-api-key>&merchantAlias=<merchant-alias>
+
+        //return "/c2/c2-3dsv2";
+        return "redirect:" + hppurl;
     }
 
 
@@ -122,7 +163,7 @@ public class C2Controller
     public String postlightbox1(@RequestParam("convergePaymentToken") String convergePaymentToken, Model model, final RedirectAttributes redirectAttributes)
     {
         // query hosted card to get acs
-        final String uri = apisite + "hosted-cards/" + convergePaymentToken;
+        final String uri = c2Configuration.getApi() + "/hosted-cards/" + convergePaymentToken;
 
         // create request
         HttpEntity request = new HttpEntity(getHeader());
@@ -132,7 +173,7 @@ public class C2Controller
         ResponseEntity<HostedCardResponse> response = restTemplate.exchange(uri, HttpMethod.GET, request, HostedCardResponse.class);
         HostedCardResponse card = response.getBody();
 
-        model.addAttribute("termurl", site + "/c2/term");
+        model.addAttribute("termurl", c2Configuration.getMerchantSite() + "/c2/term");
         if (card.getThreeDSecureV1() != null)
         {
             model.addAttribute("pareq", card.getThreeDSecureV1().getPayerAuthenticationRequest());
@@ -148,11 +189,11 @@ public class C2Controller
         ObjectMapper objectMapper = new ObjectMapper();
         MerchantData merchantData = objectMapper.readValue(md, MerchantData.class);
 
-        final String hosteduri = apisite + "hosted-cards/" + convergePaymentToken;
-        final String paymenturi = apisite + "payment-sessions/" + merchantData.getPaymentSessionId();
+        final String hosteduri = c2Configuration.getApi() + "/hosted-cards/" + convergePaymentToken;
+        final String paymenturi = c2Configuration.getApi() + "/payment-sessions/" + merchantData.getPaymentSessionId();
 
         // complete transaction
-        final String sturi = apisite + "transactions";
+        final String sturi = c2Configuration.getApi() + "/transactions";
         URI turi = new URI(sturi);
 
         TransactionRequest tr = new TransactionRequest();
@@ -176,7 +217,7 @@ public class C2Controller
     public String postForm(@RequestParam("PaRes") String paRes, @RequestParam("MD") String md,  Model model) throws URISyntaxException, java.io.UnsupportedEncodingException
     {
         // updated pares in hosted card
-        final String uri = apisite + "hosted-cards/" + md;
+        final String uri = c2Configuration.getApi() + "/hosted-cards/" + md;
 
         HostedCardRequest cardrequest = new HostedCardRequest();
         TreeDSecureV1Response tds = new TreeDSecureV1Response();
@@ -189,7 +230,7 @@ public class C2Controller
         HostedCardResponse result = restTemplate.postForObject( uri, request, HostedCardResponse.class);
 
         // complete transaction
-        final String sturi = apisite + "transactions";
+        final String sturi = c2Configuration.getApi() + "/transactions";
         URI turi = new URI(sturi);
 
         TransactionRequest tr = new TransactionRequest();
