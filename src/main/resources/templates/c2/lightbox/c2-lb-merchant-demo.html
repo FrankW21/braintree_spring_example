@@ -1,0 +1,37 @@
+<!DOCTYPE HTML>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+    <link rel="stylesheet" type="text/css" href="/css/merchant.css" th:href="@{/css/merchant.css}" />
+</head>
+<body>
+
+<div class="formwrapper">
+    <header>
+        <h1>Example Merchant</h1>
+        <p>
+            Make a test payment with converge.
+        </p>
+    </header>
+
+    <form method="POST" action="/c2/lightbox/c2-lb-3ds-challenge">
+        <section>
+            <label for="amount">
+                <span class="form-input-label">Amount</span>
+                <div class="input-wrapper amount-wrapper">
+                    <input id="amount" name="amount" type="tel" min="1" value="5" />
+                </div>
+            </label>
+            <label for="currency-code">
+                <span class="form-input-label">Currency</span>
+                <div class="form-input-wrapper currency-wrapper">
+                    <input id="currency-code" name="currency-code" value="EUR" />
+                </div>
+            </label>
+            <button class="button" type="submit"><span>Purchase</span></button>
+        </section>
+    </form>
+</div>
+
+</body>
+</html>
