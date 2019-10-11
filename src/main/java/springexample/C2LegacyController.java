@@ -16,6 +16,7 @@ import java.net.URI;
 import java.net.URISyntaxException;
 import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
+import java.util.regex.Pattern;
 
 @Controller
 public class C2LegacyController
@@ -80,24 +81,14 @@ public class C2LegacyController
         RestTemplate restTemplate = new RestTemplate();
         HostedCardResponse result = restTemplate.postForObject( uri, request, HostedCardResponse.class);
 
-        // complete transaction
-        final String sturi = c2Configuration.getApi() + "/transactions";
-        URI turi = new URI(sturi);
+        // create the transaction
+        String transresult = c2IntegrationService.createTransaction("3.23", "EUR", uri, null);
 
-        TransactionRequest tr = new TransactionRequest();
-        Total total = new Total();
-        total.setAmount("3.23");
-        total.setCurrencyCode("EUR");
-        tr.setTotal(total);
-        tr.setHostedCard(uri);
-        tr.setDoCapture("false");
-
-        HttpEntity transrequest = new HttpEntity(tr, c2IntegrationService.getHeader());
-        RestTemplate restTemplate2 = new RestTemplate();
-        ResponseEntity<String> transresult = restTemplate2.postForEntity( turi, transrequest, String.class);
-
-        //model.addAttribute("response", transresult);
-        return "redirect:/c2/done?response=" + URLEncoder.encode(transresult.getBody(), StandardCharsets.UTF_8.toString()); //, model);
+        //return "redirect:/c2/done?response=" + URLEncoder.encode(transresult.getBody(), StandardCharsets.UTF_8.toString());
+        String transactionResponse = Pattern.compile("\\n").matcher(transresult).replaceAll("<br/>");
+        transactionResponse = Pattern.compile(" ").matcher(transactionResponse).replaceAll("&nbsp;");
+        model.addAttribute("response", transactionResponse);
+        return "c2/done";
     }
 
 }

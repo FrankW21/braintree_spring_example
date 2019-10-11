@@ -2,9 +2,12 @@ package springexample;
 
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.client.RestTemplate;
 import springexample.c2model.*;
 
+import java.net.URI;
+import java.net.URISyntaxException;
 import java.util.Base64;
 
 public class C2IntegrationService
@@ -64,6 +67,30 @@ public class C2IntegrationService
         RestTemplate restTemplate = new RestTemplate();
         PaymentSessionResponse result = restTemplate.postForObject( uri, request, PaymentSessionResponse.class);
         return result;
+    }
+
+    public String createTransaction(String amount, String currencyCode, String hosteduri, String paymentsessionuri) throws
+        URISyntaxException
+    {
+        final String sturi = c2Configuration.getApi() + "/transactions";
+        URI turi = new URI(sturi);
+
+        TransactionRequest tr = new TransactionRequest();
+        Total total = new Total();
+        total.setAmount(amount);
+        total.setCurrencyCode(currencyCode);
+        tr.setTotal(total);
+        tr.setHostedCard(hosteduri);
+        if (paymentsessionuri != null)
+        {
+            tr.setPaymentSession(paymentsessionuri);
+        }
+        tr.setDoCapture("false");
+
+        HttpEntity transrequest = new HttpEntity(tr, getHeader());
+        RestTemplate restTemplate = new RestTemplate();
+        ResponseEntity<String> transresult = restTemplate.postForEntity(turi, transrequest, String.class);
+        return transresult.getBody();
     }
 
 }

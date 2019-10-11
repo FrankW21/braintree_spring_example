@@ -15,6 +15,7 @@ import springexample.c2model.*;
 import java.net.URI;
 import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
+import java.util.regex.Pattern;
 
 @Controller
 public class C2LightboxController
@@ -65,25 +66,14 @@ public class C2LightboxController
         MerchantData merchantData = objectMapper.readValue(md, MerchantData.class);
 
         final String hosteduri = c2Configuration.getApi() + "/hosted-cards/" + convergePaymentToken;
-        final String paymenturi = c2Configuration.getApi() + "/payment-sessions/" + merchantData.getPaymentSessionId();
+        final String paymentsessionuri = c2Configuration.getApi() + "/payment-sessions/" + merchantData.getPaymentSessionId();
 
-        // complete transaction
-        final String sturi = c2Configuration.getApi() + "/transactions";
-        URI turi = new URI(sturi);
+        // create the transaction
+        String transresult = c2IntegrationService.createTransaction(merchantData.getAmount(), merchantData.getCurrencyCode(), hosteduri, paymentsessionuri);
 
-        TransactionRequest tr = new TransactionRequest();
-        Total total = new Total();
-        total.setAmount(merchantData.getAmount());
-        total.setCurrencyCode(merchantData.getCurrencyCode());
-        tr.setTotal(total);
-        tr.setHostedCard(hosteduri);
-        tr.setPaymentSession(paymenturi);
-        tr.setDoCapture("false");
-
-        HttpEntity transrequest = new HttpEntity(tr, c2IntegrationService.getHeader());
-        RestTemplate restTemplate2 = new RestTemplate();
-        ResponseEntity<String> transresult = restTemplate2.postForEntity( turi, transrequest, String.class);
-
-        return "redirect:/c2/done?response=" + URLEncoder.encode(transresult.getBody(), StandardCharsets.UTF_8.toString()); //, model);
+        String transactionResponse = Pattern.compile("\\n").matcher(transresult).replaceAll("<br/>");
+        transactionResponse = Pattern.compile(" ").matcher(transactionResponse).replaceAll("&nbsp;");
+        model.addAttribute("response", transactionResponse);
+        return "c2/done";
     }
 }

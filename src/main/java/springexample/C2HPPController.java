@@ -16,6 +16,7 @@ import springexample.c2model.*;
 import java.net.URI;
 import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
+import java.util.regex.Pattern;
 
 // used in the C2 Hosted Payment Page (HPP) example which shows uses a dedicated page to take the credit card details
 @Controller
@@ -60,6 +61,7 @@ public class C2HPPController
         final String hosteduri = c2Configuration.getApi() + "/hosted-cards/" + hostedCard;
         final String paymentsessionuri = c2Configuration.getApi() + "/payment-sessions/" + sessionId;
 
+        // retrieve the payment-session to get the order
         HttpEntity request = new HttpEntity(c2IntegrationService.getHeader());
         RestTemplate restTemplate = new RestTemplate();
 
@@ -67,6 +69,7 @@ public class C2HPPController
             response = restTemplate.exchange(paymentsessionuri, HttpMethod.GET, request, PaymentSessionResponse.class);
         PaymentSessionResponse ps = response.getBody();
 
+        // retrieve the order to get the amount for the transaction
         HttpEntity request2 = new HttpEntity(c2IntegrationService.getHeader());
         RestTemplate restTemplate2 = new RestTemplate();
 
@@ -74,25 +77,14 @@ public class C2HPPController
             restTemplate.exchange(ps.getOrder(), HttpMethod.GET, request, OrderResponse.class);
         OrderResponse order = response2.getBody();
 
-        // complete transaction
-        final String sturi = c2Configuration.getApi() + "/transactions";
-        URI turi = new URI(sturi);
+        // create the transaction
+        String transresult = c2IntegrationService.createTransaction(order.getTotal().getAmount(), order.getTotal().getCurrencyCode(), hosteduri, paymentsessionuri);
 
-        TransactionRequest tr = new TransactionRequest();
-        Total total = new Total();
-        total.setAmount(order.getTotal().getAmount());
-        total.setCurrencyCode(order.getTotal().getCurrencyCode());
-        tr.setTotal(total);
-        tr.setHostedCard(hosteduri);
-        tr.setPaymentSession(paymentsessionuri);
-        tr.setDoCapture("false");
+        String transactionResponse = Pattern.compile("\\n").matcher(transresult).replaceAll("<br/>");
+        transactionResponse = Pattern.compile(" ").matcher(transactionResponse).replaceAll("&nbsp;");
+        model.addAttribute("response", transactionResponse);
+        return "c2/done";
 
-        HttpEntity transrequest = new HttpEntity(tr, c2IntegrationService.getHeader());
-        RestTemplate restTemplate3 = new RestTemplate();
-        ResponseEntity<String> transresult = restTemplate2.postForEntity(turi, transrequest, String.class);
-
-        return "redirect:/c2/done?response=" +
-            URLEncoder.encode(transresult.getBody(), StandardCharsets.UTF_8.toString()); //, model);
     }
 
     // called in hpp integration when user cancels out of credit card page
