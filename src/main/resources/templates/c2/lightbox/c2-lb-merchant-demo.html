@@ -3,6 +3,7 @@
 <head>
     <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
     <link rel="stylesheet" type="text/css" href="/css/merchant.css" th:href="@{/css/merchant.css}" />
+    <script src="https://code.jquery.com/jquery-3.4.1.js"></script>
 </head>
 <body>
 
@@ -14,7 +15,7 @@
         </p>
     </header>
 
-    <form method="POST" action="/c2/lightbox/c2-lb-3ds-challenge">
+    <form method="POST" action="/c2/lightbox/c2-lb-3ds-challenge" id="paymentForm">
         <section>
             <label for="amount">
                 <span class="form-input-label">Amount</span>
@@ -32,6 +33,29 @@
         </section>
     </form>
 </div>
+
+<script>
+// Attach a submit handler to the form
+$( "#paymentForm" ).hidesubmit(function( event ) {
+
+  // Stop form from submitting normally
+  event.preventDefault();
+
+  // Get some values from elements on the page:
+  var $form = $( this ),
+    amount = $form.find( "#amount" ).val(),
+    currencyCode = $form.find( "#currency-code" ).val(),
+    url = '/c2/lightbox/c2-lb-3ds-challenge';
+
+  // Send the data using post
+  var posting = $.post( url, { "currency-code": currencyCode, amount: amount } );
+
+  // Put the results in a div
+  posting.done(function( data ) {
+    alert('done')
+  });
+});
+</script>
 
 </body>
 </html>

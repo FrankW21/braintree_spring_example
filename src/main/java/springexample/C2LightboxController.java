@@ -2,6 +2,7 @@ package springexample;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.springframework.http.HttpEntity;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -57,6 +58,30 @@ public class C2LightboxController
 
         return "/c2/lightbox/c2-lb-3ds-challenge";
     }
+
+    @RequestMapping(value = "/c2/lightbox/c2-lb-3ds-challenge2", method = RequestMethod.POST)
+    public ResponseEntity<LightboxData> c2Lightbox3dsChallenge2(@RequestParam("amount") String amount, @RequestParam("currency-code") String currencyCode, Model model) throws com.fasterxml.jackson.core.JsonProcessingException
+    {
+        OrderResponse order = c2IntegrationService.createOrder(amount, currencyCode);
+        PaymentSessionResponse response = c2IntegrationService.createPaymentSession(order);
+        model.addAttribute("src", c2Configuration.getHpp() + "/client/index.js");
+        model.addAttribute("id", response.getId());
+
+        MerchantData merchantData = new MerchantData();
+        merchantData.setAmount(amount);
+        merchantData.setCurrencyCode(currencyCode);
+        merchantData.setPaymentSessionId(response.getId());
+
+        ObjectMapper objectMapper = new ObjectMapper();
+        String md = objectMapper.writeValueAsString(merchantData);
+
+        LightboxData lb = new LightboxData();
+        lb.setMd(md);
+        lb.setDataSessionId(response.getId());
+
+        return new ResponseEntity<LightboxData>(lb, HttpStatus.OK);
+    }
+
 
     // process return from 3ds verification.  create a transaction
     @RequestMapping(value = "/c2/lightbox/c2-lb-3ds-results", method = RequestMethod.POST)
