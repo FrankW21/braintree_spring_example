@@ -4,9 +4,9 @@ public class LightboxData
 {
     String src;
     String md;
-    String dataSessionId;
-    String dataMerchantAlias;
-    String dataPublicKey;
+    String sessionId;
+    String merchantAlias;
+    String publicKey;
 
     public String getSrc()
     {
@@ -28,33 +28,33 @@ public class LightboxData
         this.md = md;
     }
 
-    public String getDataSessionId()
+    public String getSessionId()
     {
-        return dataSessionId;
+        return sessionId;
     }
 
-    public void setDataSessionId(String dataSessionId)
+    public void setSessionId(String sessionId)
     {
-        this.dataSessionId = dataSessionId;
+        this.sessionId = sessionId;
     }
 
-    public String getDataMerchantAlias()
+    public String getMerchantAlias()
     {
-        return dataMerchantAlias;
+        return merchantAlias;
     }
 
-    public void setDataMerchantAlias(String dataMerchantAlias)
+    public void setMerchantAlias(String merchantAlias)
     {
-        this.dataMerchantAlias = dataMerchantAlias;
+        this.merchantAlias = merchantAlias;
     }
 
-    public String getDataPublicKey()
+    public String getPublicKey()
     {
-        return dataPublicKey;
+        return publicKey;
     }
 
-    public void setDataPublicKey(String dataPublicKey)
+    public void setPublicKey(String publicKey)
     {
-        this.dataPublicKey = dataPublicKey;
+        this.publicKey = publicKey;
     }
 }

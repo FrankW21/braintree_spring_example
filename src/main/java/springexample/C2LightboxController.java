@@ -1,7 +1,6 @@
 package springexample;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
@@ -9,13 +8,9 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.client.RestTemplate;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 import springexample.c2model.*;
 
-import java.net.URI;
-import java.net.URLEncoder;
-import java.nio.charset.StandardCharsets;
 import java.util.regex.Pattern;
 
 @Controller
@@ -77,7 +72,10 @@ public class C2LightboxController
 
         LightboxData lb = new LightboxData();
         lb.setMd(md);
-        lb.setDataSessionId(response.getId());
+        lb.setSessionId(response.getId());
+        lb.setMerchantAlias(c2Configuration.getMerchantAlias());
+        lb.setPublicKey(c2Configuration.getPublicApiKey());
+        lb.setSrc(c2Configuration.getHpp() + "/client/index.js");
 
         return new ResponseEntity<LightboxData>(lb, HttpStatus.OK);
     }
