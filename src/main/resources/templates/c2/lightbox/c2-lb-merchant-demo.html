@@ -44,8 +44,17 @@ function sleep(ms) {
 
 async function displayLightbox(merchantAlias, publicKey, sessionId, md, src)
 {
+
+    var oldForm = $("#lightboxForm");
+    if (oldForm.length > 0)
+    {
+        // remove old form if it exist to prevent multiple buttons
+        oldForm.remove();
+    }
+
     var form = document.createElement("form");
     form.setAttribute("method", "post");
+    form.setAttribute("id", "lightboxForm");
     form.setAttribute("action", "/c2/lightbox/c2-lb-3ds-results");
 
     var hiddenFieldMD = document.createElement("input");
@@ -65,12 +74,9 @@ async function displayLightbox(merchantAlias, publicKey, sessionId, md, src)
     var formParent = $("#paymentFormHolder");
     formParent[0].appendChild(form);
 
-    //document.body.appendChild(form);
-    //form.submit();
-
+    // must click the button which does not initially exist so we must wait for it to exist first.
     do
     {
-        //var btn = document.getElementsByClassName("converge-button");
         var btn = $("button.converge-button")
         if (btn.length > 0)
         {
