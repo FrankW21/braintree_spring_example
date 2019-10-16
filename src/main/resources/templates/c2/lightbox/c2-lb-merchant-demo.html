@@ -4,33 +4,43 @@
     <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
     <link rel="stylesheet" type="text/css" href="/css/merchant.css" th:href="@{/css/merchant.css}" />
     <script src="https://code.jquery.com/jquery-3.4.1.js"></script>
+
+    <!-- Bootstrap core CSS -->
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous"/>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js" integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM" crossorigin="anonymous"></script>
+
 </head>
-<body>
+<body class="bg-light">
 
 <div class="formwrapper">
     <header>
-        <h1>Example Merchant</h1>
-        <p>
-            Make a test payment with converge.
-        </p>
+        <div class="py-5 text-center">
+            <h2>Example Merchant</h2>
+            <p class="lead">
+                Make a test payment with converge.
+            </p>
+        </div>
     </header>
 
-    <form action="/" id="paymentForm">
-        <section>
-            <label for="amount">
-                <span class="form-input-label">Amount</span>
-                <div class="input-wrapper amount-wrapper">
-                    <input id="amount" name="amount" type="tel" min="1" value="5" />
-                </div>
-            </label>
-            <label for="currency-code">
-                <span class="form-input-label">Currency</span>
-                <div class="form-input-wrapper currency-wrapper">
-                    <input id="currency-code" name="currency-code" value="EUR" />
-                </div>
-            </label>
-            <button class="button" type="submit"><span>Purchase</span></button>
-        </section>
+    <form action="/" id="paymentForm" class="needs-validation" novalidate="true">
+        <div class="mb-2">
+            <label for="amount">Amount</label>
+            <input id="amount" name="amount" class="form-control" type="tel" min="1" placeholder="" required="true"/>
+            <div class="invalid-feedback">
+                Please enter a valid amount.
+            </div>
+        </div>
+
+        <div class="mb-2">
+            <label for="currency-code">Currency</label>
+            <select class="custom-select d-block w-100" id="currency-code">
+                <option>EUR</option>
+                <option>BRT</option>
+            </select>
+        </div>
+
+        <hr class="mb-4"/>
+        <button class="btn btn-primary" type="submit" id="purchasebtn"><span>Purchase</span></button>
     </form>
 
     <div id="paymentFormHolder" style="visibility: hidden;"></div>
@@ -88,27 +98,60 @@ async function displayLightbox(merchantAlias, publicKey, sessionId, md, src)
         }
     }
     while (btn.length == 0);
+
+    // renable purchase button.  lightbox spinner should be up
+    $('#purchasebtn').html('<span>Purchase</span>' ).addClass('enabled');
 }
+
+//$("#paymentform").validator();
 
 $( "#paymentForm" ).submit(function( event ) {
 
-  // Stop form from submitting normally
-  event.preventDefault();
+    var form = $("#paymentForm")[0];
+    if (form.checkValidity() === true)
+    {
+        $('#purchasebtn').html('<span class="spinner-border spinner-border-sm mr-2" role="status" aria-hidden="true"></span>Loading...').addClass('disabled');
+    }
 
-  // Get some values from elements on the page:
-  var $form = $( this ),
+    // Stop form from submitting normally
+    event.preventDefault();
+
+    // Get some values from elements on the page:
+    var $form = $( this ),
     amount = $form.find( "#amount" ).val(),
     currencyCode = $form.find( "#currency-code" ).val(),
     url = '/c2/lightbox/c2-lb-3ds-challenge2';
 
-  // Send the data using post
-  var posting = $.post( url, { "currency-code": currencyCode, amount: amount } );
+    // Send the data using post
+    var posting = $.post( url, { "currency-code": currencyCode, amount: amount } );
 
-  // Put the results in a div
-  posting.done(function( data ) {
-    displayLightbox(data.merchantAlias, data.publicKey, data.sessionId, data.md, data.src);
-  });
+    // Put the results in a div
+    posting.done(function( data ) {
+        displayLightbox(data.merchantAlias, data.publicKey, data.sessionId, data.md, data.src);
+    });
 });
+
+// Example starter JavaScript for disabling form submissions if there are invalid fields
+(function () {
+  'use strict'
+
+  window.addEventListener('load', function () {
+    // Fetch all the forms we want to apply custom Bootstrap validation styles to
+    var forms = document.getElementsByClassName('needs-validation')
+
+    // Loop over them and prevent submission
+    Array.prototype.filter.call(forms, function (form) {
+      form.addEventListener('submit', function (event) {
+        if (form.checkValidity() === false) {
+          event.preventDefault()
+          event.stopPropagation()
+        }
+        form.classList.add('was-validated')
+      }, false)
+    })
+  }, false)
+}())
+
 </script>
 
 </body>
