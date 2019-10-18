@@ -35,7 +35,7 @@ public class C2HPPController
     @RequestMapping(value = "/c2/hpp/c2-hpp-merchant-demo", method = RequestMethod.GET)
     public String c2HPPDemoPage(Model model)
     {
-        return "/c2/hpp/c2-hpp-merchant-demo";
+        return "c2/hpp/c2-hpp-merchant-demo";
     }
 
     // post amounts here which will create an order and a payment-session and forward to the 3ds verification page
@@ -91,6 +91,6 @@ public class C2HPPController
     @RequestMapping(value = "/c2/hpp/cancel", method = RequestMethod.GET)
     public String c2Cancel(@RequestParam("sessionId") String sessionId, Model model) throws Exception
     {
-        return "/c2/hpp/c2-hpp-cancel";
+        return "c2/hpp/c2-hpp-cancel";
     }
 }

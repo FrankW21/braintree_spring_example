@@ -30,7 +30,7 @@ public class C2LightboxController
     @RequestMapping(value = "/c2/lightbox/c2-lightbox-merchant-demo", method = RequestMethod.GET)
     public String c2LightboxDemoPage(Model model)
     {
-        return "/c2/lightbox/c2-lb-merchant-demo";
+        return "c2/lightbox/c2-lb-merchant-demo";
     }
 
     @RequestMapping(value = "/c2/lightbox/c2-lb-3ds-challenge", method = RequestMethod.POST)
@@ -51,7 +51,7 @@ public class C2LightboxController
 
         model.addAttribute("md", md);
 
-        return "/c2/lightbox/c2-lb-3ds-challenge";
+        return "c2/lightbox/c2-lb-3ds-challenge";
     }
 
     @RequestMapping(value = "/c2/lightbox/c2-lb-3ds-challenge2", method = RequestMethod.POST)
