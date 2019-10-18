@@ -37,7 +37,7 @@ public class C2LegacyController
         PaymentSessionResponse response = c2IntegrationService.createPaymentSession(order);
         model.addAttribute("src", c2Configuration.getHpp() + "/client/index.js");
         model.addAttribute("id", response.getId());
-        return "/c2/legacy/c2-lb-legacy-merchant-demo";
+        return "c2/legacy/c2-lb-legacy-merchant-demo";
     }
 
     @RequestMapping(value = "/c2/legacy/c2-lb-receive-payment-token", method = RequestMethod.POST)
@@ -61,7 +61,7 @@ public class C2LegacyController
             model.addAttribute("md", convergePaymentToken);
         }
 
-        return "/c2/legacy/acsform";
+        return "c2/legacy/acsform";
     }
 
     @RequestMapping(value = "/c2/legacy/c2-lb-3dsv1-term", method = RequestMethod.POST)

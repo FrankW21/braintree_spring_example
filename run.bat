@@ -1,1 +1,1 @@
-java -jar build/libs/bt-example-0.1.0.jar
+java -Dhttps.proxyHost=proxy.na.global.prv -Dhttps.proxyPort=8080 -Dhttp.proxyHost=proxy.na.global.prv -Dhttp.proxyPort=8080 -Dhttp.nonProxyHosts="127.*|localhost|192.168.*" -jar build/libs/bt-example-0.1.0.jar

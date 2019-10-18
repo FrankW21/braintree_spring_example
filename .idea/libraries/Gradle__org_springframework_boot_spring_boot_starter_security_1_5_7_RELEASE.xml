@@ -2,6 +2,7 @@
   <library name="Gradle: org.springframework.boot:spring-boot-starter-security:1.5.7.RELEASE">
     <CLASSES>
       <root url="file://$PROJECT_DIR$/Could not resolve org.springframework.boot:spring-boot-starter-security:1.5.7.RELEASE." />
+      <root url="jar://$USER_HOME$/.gradle/caches/modules-2/files-2.1/org.springframework.boot/spring-boot-starter-security/1.5.7.RELEASE/e680aa1a8990a6e98e7a843c88f0a8bc378bb4d/spring-boot-starter-security-1.5.7.RELEASE.jar!/" />
     </CLASSES>
     <JAVADOC />
     <SOURCES />
